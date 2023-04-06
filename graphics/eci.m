@@ -107,15 +107,15 @@ plot3(apogee(1), apogee(2), apogee(3), 'blue*', 'MarkerSize', 10);
 
 if norm(orbit.e) < 1
     % ascending and descending nodes
-%     plot3([anv(1) dnv(1)], [anv(2) dnv(2)], [anv(3) dnv(3)], 'black:');
+    plot3([anv(1) dnv(1)], [anv(2) dnv(2)], [anv(3) dnv(3)], 'black:');
     plot3(anv(1), anv(2), anv(3), 'redo');
     plot3(dnv(1), dnv(2), dnv(3), 'red.');
 end
 
 % line of apsides
-% plot3([apogee(1) perigee(1)], ...
-%       [apogee(2) perigee(2)], ...
-%       [apogee(3) perigee(3)], 'blue--');
+plot3([apogee(1) perigee(1)], ...
+      [apogee(2) perigee(2)], ...
+      [apogee(3) perigee(3)], 'blue--');
 
 % true anomaly
 % plot3([0 orbit.r(1)], [0 orbit.r(2)], [0 orbit.r(3)], 'g-');
@@ -143,17 +143,19 @@ xlabel("X");
 ylabel("Y");
 zlabel("Z");
 
-view([0, 0, 1]);
+% view([0, 0, 1]);
 
-if isfinite(orbit.primary_body.soi)
-    xlim([-orbit.primary_body.soi/3, orbit.primary_body.soi/3]);
-    ylim([-orbit.primary_body.soi/3, orbit.primary_body.soi/3]);
-    zlim([-orbit.primary_body.soi/3, orbit.primary_body.soi/3]);
-else
-    xlim([-orbit.a*2, orbit.a*2]);
-    ylim([-orbit.a*2, orbit.a*2]);
-    zlim([-orbit.a*2, orbit.a*2]);
-end
+% aabs = abs(orbit.a);
+
+% if isfinite(orbit.primary_body.soi)
+%     xlim([-orbit.primary_body.soi/3, orbit.primary_body.soi/3]);
+%     ylim([-orbit.primary_body.soi/3, orbit.primary_body.soi/3]);
+%     zlim([-orbit.primary_body.soi/3, orbit.primary_body.soi/3]);
+% else
+%     xlim([-aabs*2, aabs*2]);
+%     ylim([-aabs*2, aabs*2]);
+%     zlim([-aabs*2, aabs*2]);
+% end
 
 end
    

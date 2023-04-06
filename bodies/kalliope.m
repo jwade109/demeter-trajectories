@@ -3,7 +3,7 @@ function body = kalliope()
 body = struct;
 body.type = 'body';
 body.name = 'kalliope';
-body.mu = mu('kalliope');
+body.mu = 5.446e8;
 
 % Relative ICRF Heliocentric Classical Elements, May 31st, 2020
 body.orbit = elements2orbit(435381781.210340*1000,... % SMA

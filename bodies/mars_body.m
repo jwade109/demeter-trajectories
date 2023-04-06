@@ -3,7 +3,7 @@ function body = mars()
 body = struct;
 body.type = 'body';
 body.name = 'mars';
-body.mu = mu('mars');
+body.mu = 4.282e13;
 body.radius = 3396200;
 
 body.orbit = elements2orbit(227931824.974689*1000,... % SMA
@@ -12,7 +12,7 @@ body.orbit = elements2orbit(227931824.974689*1000,... % SMA
             deg2rad(3.367),... % right ascension
             deg2rad(333.102),... % argument of periapsis
             deg2rad(237.676),... % true anomaly
-            sun());
+            sun_body());
 body.orbit.epoch = datetime('01-jan-2020');
         
 body.soi = hill_sphere(body);

@@ -1,6 +1,10 @@
 clear;
 clc;
 
+sun = sun();
+
+figure;
+
 %% Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
 earth = elements2orbit(149654521.711853*1000,... % SMA
             0.017126,... % eccentricity
@@ -8,7 +12,7 @@ earth = elements2orbit(149654521.711853*1000,... % SMA
             deg2rad(0.002),... % right ascension
             deg2rad(104.051),... % argument of periapsis
             deg2rad(355.687),... % true anomaly
-            mu('sun'));
+            sun);
 earth.epoch = 0;
 
 mars = elements2orbit(227931824.974689*1000,... % SMA
@@ -17,7 +21,7 @@ mars = elements2orbit(227931824.974689*1000,... % SMA
             deg2rad(3.367),... % right ascension
             deg2rad(333.102),... % argument of periapsis
             deg2rad(237.676),... % true anomaly
-            mu('sun'));
+            sun);
 mars.epoch = 0;
 
 %% do the thing
@@ -25,12 +29,12 @@ mars.epoch = 0;
 eci(earth);
 eci(mars);
 
-continuous2(earth, mars, mu('sun'));
+continuous2(earth, mars, sun);
 
 
 %% continuous thrust designer
 
-function continuous2(earth, mars, mu)
+function continuous2(earth, mars, sun)
 
 r1 = earth.r;
 
@@ -47,7 +51,7 @@ for m = 1:M
 seed_tof = seed_tof_range(m);
 
 mars_at_tof = mars; % propagate_to(mars, mars.epoch + seed_tof);
-seed = rv2orbit(r1, intercept2(r1, mars_at_tof.r, seed_tof, mu), mu);
+seed = rv2orbit(r1, intercept2(r1, mars_at_tof.r, seed_tof, sun.mu), sun, earth.epoch);
 seed.epoch = earth.epoch;
 routes{m} = history(seed, linspace(seed.epoch, seed.epoch + seed_tof, N+1));
 
@@ -56,7 +60,6 @@ end
 for p = 1:size(choices, 1)
     
 curr_choice = choices(p, :);
-disp(curr_choice);
 line = zeros(N+1, 3);
 
 for y = 1:numel(curr_choice)
@@ -71,8 +74,8 @@ plot3(line(:,1), line(:,2), line(:,3), 'r-');
 for n = 1:N
     r1 = line(n,:);
     r2 = line(n+1,:);
-    v1 = intercept2(r1, r2, tof/N, mu);
-    transfer = rv2orbit(r1, v1, mu);
+    v1 = intercept2(r1, r2, tof/N, sun.mu);
+    transfer = rv2orbit(r1, v1, sun, earth.epoch);
     transfer.epoch = 0;
     transfer.stop = transfer.epoch + tof/N;
     eci(transfer);

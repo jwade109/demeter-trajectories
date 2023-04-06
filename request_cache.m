@@ -14,7 +14,7 @@ else
     file = 0;
 end
 
-path = what('cache');
+path = what('.cache');
 path = path.path;
 cache = sprintf("%s\\%s", path, fn);
 

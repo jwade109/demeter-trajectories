@@ -23,5 +23,5 @@ nodes = add_maneuver(nodes, orbiter, orbiter, 'TEI (SEP)', 7000);
 nodes = add_maneuver(nodes, orbiter, orbiter, 'LEO', 6000);
 
 tables = compile(nodes);
-[imleo, burn_time] = simple_report(tables)
+[imleo, burn_time] = simple_report(tables);
 

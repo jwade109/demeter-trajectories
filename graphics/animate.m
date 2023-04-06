@@ -1,23 +1,23 @@
-function animate(frames_per_day, varargin)
+function animate(orbits, timespans, colors)
 
-orbits = varargin;
+% orbits = varargin;
 
 o = numel(orbits);
 timespans = [];
 
-for i = 1:o
-    orb = orbits{i};
-    if ~isfield(orb, 'type')
-        warning("Degenerate struct lacks type information");
-    elseif strcmp(orb.type, 'low-thrust trajectory')
-        ts = [orb.initial.epoch, orb.final.epoch];
-    elseif isfield(orb, 'stop')
-        ts = [orb.epoch, orb.stop];
-    else
-        ts = [orb.epoch, orb.epoch + orb.T];
-    end
-    timespans = [timespans; ts];
-end
+% for i = 1:o
+%     orb = orbits{i};
+%     if ~isfield(orb, 'type')
+%         warning("Degenerate struct lacks type information");
+%     elseif strcmp(orb.type, 'low-thrust trajectory')
+%         ts = [orb.initial.epoch, orb.final.epoch];
+%     elseif isfield(orb, 'stop')
+%         ts = [orb.epoch, orb.stop];
+%     else
+%         ts = [orb.epoch, orb.epoch + orb.T];
+%     end
+%     timespans = [timespans; ts];
+% end
 
 min_min = datetime(Inf, Inf, Inf);
 max_max = datetime(0, 0, 0);

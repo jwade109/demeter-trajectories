@@ -3,7 +3,7 @@ function body = luna()
 body = struct;
 body.type = 'body';
 body.name = 'luna';
-body.mu = mu('luna');
+body.mu = 4.904e12;
 body.radius = 1738100;
 
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020

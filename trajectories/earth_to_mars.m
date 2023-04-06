@@ -34,15 +34,17 @@ end
 
 %% orbit definitions
 
+sun = sun_body();
+
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
-e = earth();
+e = earth_body();
 e = e.orbit;
 earth_parking = elements2orbit((6378+500)*1000,...
-    0, 0, 0, 0, 0, earth());
-m = mars();
+    0, 0, 0, 0, 0, earth_body());
+m = mars_body();
 m = m.orbit;
 mars_parking = elements2orbit(3600*1000,...
-    0, 0, 0, 0, 0, mars());
+    0, 0, 0, 0, 0, m);
 
 %% comb the desert
 
@@ -66,19 +68,19 @@ for rtof = return_tofs
     
 e4 = propagate_to(e, launch_date + dtof + stay_time + rtof);
 
-[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
-[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, mu('sun'));
+[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, sun.mu);
+[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, sun.mu);
 
 if norm(v1 - e1.v) < norm(v2 - e1.v)
-    t1 = rv2orbit(e1.r, v1, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v1, sun, e1.epoch);
 else
-    t1 = rv2orbit(e1.r, v2, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v2, sun, e1.epoch);
 end
 
 if norm(v3 - m3.v) < norm(v4 - m3.v)
-    t3 = rv2orbit(m3.r, v3, sun(), m3.epoch);
+    t3 = rv2orbit(m3.r, v3, sun, m3.epoch);
 else
-    t3 = rv2orbit(m3.r, v4, sun(), m3.epoch);
+    t3 = rv2orbit(m3.r, v4, sun, m3.epoch);
 end
 
 t2 = propagate_to(t1, m2.epoch);

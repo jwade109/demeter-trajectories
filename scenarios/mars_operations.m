@@ -2,8 +2,8 @@ clear;
 clc;
 close all;
 
-phobos = phobos();
-deimos = deimos();
+phobos = phobos_body();
+deimos = deimos_body();
 eci(phobos, deimos);
 
 % mars entrance
@@ -45,7 +45,7 @@ exit_traj = continuous_escape( ...
 % plot
 
 eci(phobos.orbit, deimos.orbit, exit_traj.final);
-animate(40, maneuvers{:}, parking_orbit, entry_traj, exit_traj);
+% animate(40, maneuvers{:}, parking_orbit, entry_traj, exit_traj);
 
 fprintf("MAV dv: %0.1f\n", mav_dv);
 fprintf("Aerocapture raise dv: %f\n", aero_dv(end));

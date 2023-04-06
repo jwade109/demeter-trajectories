@@ -6,7 +6,7 @@ end
 
 e = earth();
 orbit = elements2orbit(e.radius + radius,...
-    0, 0, 0, 0, 0, e);
+    0, 0, 0, 0, 0, earth());
 orbit.epoch = e.orbit.epoch;
 
 end
