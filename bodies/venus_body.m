@@ -1,8 +1,7 @@
-function body = venus()
+function body = venus_body()
 
-body = struct;
-body.type = 'body';
-body.name = 'venus';
+body = astronomical_body();
+body.name = 'Venus';
 body.mu = 1;  % TODO wildly incorrect
 body.radius = 1;
 
@@ -13,7 +12,7 @@ body.orbit = elements2orbit(108200000*1000,... % SMA
             deg2rad(0.002),... % right ascension
             deg2rad(104.051),... % argument of periapsis
             deg2rad(355.687),... % true anomaly
-            sun_body());
+            sol_body());
 body.orbit.epoch = datetime('01-jan-2020');
 
 body.soi = hill_sphere(body);

@@ -1,42 +1,25 @@
 clear;
 clc;
-
-sun = sun();
-
 figure;
 
 %% Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
-earth = elements2orbit(149654521.711853*1000,... % SMA
-            0.017126,... % eccentricity
-            deg2rad(23.437),... % inclination
-            deg2rad(0.002),... % right ascension
-            deg2rad(104.051),... % argument of periapsis
-            deg2rad(355.687),... % true anomaly
-            sun);
-earth.epoch = 0;
-
-mars = elements2orbit(227931824.974689*1000,... % SMA
-            0.093500,... % eccentricity
-            deg2rad(24.677),... % inclination
-            deg2rad(3.367),... % right ascension
-            deg2rad(333.102),... % argument of periapsis
-            deg2rad(237.676),... % true anomaly
-            sun);
-mars.epoch = 0;
+earth = earth_body();
+mars = mars_body();
+sol = sol_body();
 
 %% do the thing
 
 eci(earth);
 eci(mars);
 
-continuous2(earth, mars, sun);
+% continuous2(earth, mars, sol);
 
 
 %% continuous thrust designer
 
-function continuous2(earth, mars, sun)
+function continuous2(earth, mars, sol)
 
-r1 = earth.r;
+r1 = earth.radius;
 
 N = 4;
 M = 3;
@@ -47,18 +30,20 @@ routes = cell(M, 1);
 choices = paths(N, M);
 
 for m = 1:M
-    
+
 seed_tof = seed_tof_range(m);
 
 mars_at_tof = mars; % propagate_to(mars, mars.epoch + seed_tof);
-seed = rv2orbit(r1, intercept2(r1, mars_at_tof.r, seed_tof, sun.mu), sun, earth.epoch);
+seed = rv2orbit(r1, intercept2(r1, mars_at_tof.radius, ...
+    seed_tof, sol.mu), sol, earth.epoch);
 seed.epoch = earth.epoch;
-routes{m} = history(seed, linspace(seed.epoch, seed.epoch + seed_tof, N+1));
+timespace = linspace(seed.epoch, seed.epoch + seed_tof, N+1);
+routes{m} = history(seed, timespace);
 
 end
 
 for p = 1:size(choices, 1)
-    
+
 curr_choice = choices(p, :);
 line = zeros(N+1, 3);
 
@@ -74,8 +59,8 @@ plot3(line(:,1), line(:,2), line(:,3), 'r-');
 for n = 1:N
     r1 = line(n,:);
     r2 = line(n+1,:);
-    v1 = intercept2(r1, r2, tof/N, sun.mu);
-    transfer = rv2orbit(r1, v1, sun, earth.epoch);
+    v1 = intercept2(r1, r2, tof/N, sol.mu);
+    transfer = rv2orbit(r1, v1, sol, earth.epoch);
     transfer.epoch = 0;
     transfer.stop = transfer.epoch + tof/N;
     eci(transfer);

@@ -3,19 +3,19 @@ function vreq = opposition_with_cycler()
 if nargin < 1
     launch_dates = datetime('30-Jun-2035');
 end
-    
+
 
 %% orbit definitions
 
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
-e = earth();
+e = earth_body();
 e = e.orbit;
 earth_parking = elements2orbit((6378+500)*1000,...
-    0, 0, 0, 0, 0, earth());
-m = mars();
+    0, 0, 0, 0, 0, earth_body());
+m = mars_body();
 m = m.orbit;
 mars_parking = elements2orbit(3600*1000,...
-    0, 0, 0, 0, 0, mars());
+    0, 0, 0, 0, 0, mars_body());
 
 %% comb the desert
 
@@ -24,34 +24,34 @@ earth_reentry_limit = 4000; % m/s
 mars_reentry_limit = 3000; % m/s
 
 for launch_date = datetime('01-June-2035'):days(1):datetime('31-Aug-2035')
-    
+
 e1 = propagate_to(e, launch_date);
 
 for dtof = days(140:10:260)
-    
+
 m2 = propagate_to(m, launch_date + dtof);
 
 for stay_time = days(60)
-    
+
 m3 = propagate_to(m, launch_date + dtof + stay_time);
-    
+
 for rtof = days(200:10:280)
-    
+
 e4 = propagate_to(e, launch_date + dtof + stay_time + rtof);
 
 [v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
 [v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, mu('sun'));
 
 if norm(v1 - e1.v) < norm(v2 - e1.v)
-    t1 = rv2orbit(e1.r, v1, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v1, sol_body(), e1.epoch);
 else
-    t1 = rv2orbit(e1.r, v2, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v2, sol_body(), e1.epoch);
 end
 
 if norm(v3 - m3.v) < norm(v4 - m3.v)
-    t3 = rv2orbit(m3.r, v3, sun(), m3.epoch);
+    t3 = rv2orbit(m3.r, v3, sol_body(), m3.epoch);
 else
-    t3 = rv2orbit(m3.r, v4, sun(), m3.epoch);
+    t3 = rv2orbit(m3.r, v4, sol_body(), m3.epoch);
 end
 
 t2 = propagate_to(t1, m2.epoch);
@@ -84,7 +84,7 @@ fprintf("%s: D: %0.1f, S: %0.1f, R: %0.1f = %0.3f km/s, %0.2f days\n",...
     days(stay_time),...
     days(rtof),...
     dv/1000, days(total_time));
-    
+
 if minimize < global_min
     global_min = minimize;
     min = struct;
@@ -138,11 +138,5 @@ animate(2, min.e1, min.m1, min.t1, min.t2, min.t3, min.t4);
 vreq = [min.dv1, min.dv2, min.dv3, min.dv4];
 
 end
-
-end
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
 
 end

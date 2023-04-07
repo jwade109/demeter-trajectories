@@ -1,12 +1,9 @@
 function orbit = earth_parking(radius)
 
-if nargin < 1
+if nargin < 2
     radius = 500000;
 end
 
-e = earth();
-orbit = elements2orbit(e.radius + radius,...
-    0, 0, 0, 0, 0, earth());
-orbit.epoch = e.orbit.epoch;
+orbit = parking_orbit(earth_body(), radius);
 
 end

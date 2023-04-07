@@ -1,21 +1,17 @@
-function [success, file, cache] = request_cache(funcname, varargin)
+function [success, file, fn] = request_cache(funcname, varargin)
 
+mkdir('.cache')
 h = hashargs(varargin);
-fn = sprintf('%s_%s.mat', funcname, h);
+fn = sprintf('.cache/%s_%s.mat', funcname, h);
 fprintf("Results stored in %s\n", fn);
-location = which(fn);
 
-if ~isempty(location)
-    fprintf("Loading from cached result: %s\n", location);
+if isfile(fn)
+    fprintf("Loading from cached result: %s\n", fn);
     success = true;
-    file = load(location);
+    file = load(fn);
 else
     success = false;
     file = 0;
 end
-
-path = what('.cache');
-path = path.path;
-cache = sprintf("%s\\%s", path, fn);
 
 end

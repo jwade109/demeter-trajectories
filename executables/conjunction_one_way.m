@@ -4,14 +4,13 @@ close all;
 
 %% orbit definitions
 
-earth = earth();
-mars = mars();
-sun = sun();
+earth = earth_body();
+mars = mars_body();
+sun = sol_body();
 
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
 earth_parking = elements2orbit((6378+500)*1000,...
     0, 0, 0, 0, 0, earth);
-mars = mars();
 mars_parking = elements2orbit(9000*1000,...
     0, 0, 0, 0, 0, mars);
 
@@ -44,7 +43,7 @@ else
 end
 
 t2 = propagate_to(t1, m2.epoch);
-t1.stop = t2.epoch;
+% t1.stop = t2.epoch;
 
 dv1 = dvreq(norm(t1.v - e1.v), earth_parking);
 dv2 = dvreq(norm(t2.v - m2.v), mars_parking);
@@ -81,7 +80,7 @@ end
 fprintf(":: %s D %0.1f = (%0.1f, %0.1f) km/s\n",...
     datestr(min.time), days(min.dtof), min.dv1/1000, min.dv2/1000);
 
-eci(min.e1, min.m2, min.t1, min.m1);
+eci({min.e1, min.m2, min.t1, min.m1});
 
 % TODO get this working -- it was cool
 % animate({min.e1, min.m2, min.t1, min.m1},...

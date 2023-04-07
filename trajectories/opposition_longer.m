@@ -5,11 +5,11 @@ close all;
 %% orbit definitions
 
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
-earth = earth();
+earth = earth_body();
 earth_parking = elements2orbit((6378+500)*1000,...
     0, 0, 0, 0, 0, mu('earth'));
 
-mars = mars();
+mars = mars_body();
 mars_parking = elements2orbit(9000*1000,...
     0, 0, 0, 0, 0, mu('mars'));
 
@@ -24,19 +24,19 @@ for launch_date = linspace(...
 e1 = propagate_to(earth, launch_date);
 
 for dtof = days(130)
-    
+
 m2 = propagate_to(mars, launch_date + dtof);
 
 for stay_time = days(45)
-    
+
 m3 = propagate_to(mars, launch_date + dtof + stay_time);
-    
+
 for rtof = days(255)
-    
+
 e4 = propagate_to(earth, launch_date + dtof + stay_time + rtof);
 
 for linear_dv = 3500:50:3900
-    
+
 for btof = days(270:5:370)
 
 for utof = days(300:5:370)
@@ -50,7 +50,7 @@ e8 = propagate_to(earth, launch_date + dtof + stay_time + rtof + btof + utof);
 if sum(isnan(v1)) || sum(isnan(v2)) || sum(isnan(v3)) || sum(isnan(v4))
     error("NaN detected!");
 end
-    
+
 if norm(v1 - e1.v) < norm(v2 - e1.v)
     t1 = rv2orbit(e1.r, v1, mu('sun'), e1.epoch);
 else
@@ -99,7 +99,7 @@ rndzv_dv = dv2 + dv4;
 minimize = dv5 + dv6 + max(dv7 - reentry_limit, 0);
 
 total_time = dtof + rtof + stay_time;
- 
+
 fprintf("%s: D: %0.1f, S: %0.1f, R: %0.1f = " +...
     "%0.1f km/s, %0.1f days\n",...
     datestr(launch_date),...
@@ -111,8 +111,8 @@ fprintf("%0.2f km/s M: %0.1f C: %0.1f = %0.2f km/s\n",...
     linear_dv/1000,...
     days(btof),...
     days(utof), minimize/1000);
-    
-    
+
+
 if minimize < global_min
     global_min = minimize;
     min = struct;
@@ -185,7 +185,7 @@ fprintf(":: %s D %0.1f, S %0.1f, R %0.1f = (%0.1f, %0.1f, %0.1f, %0.1f) kmps, %0
 fprintf(":: M %0.1f C %0.1f = (%0.2f %0.2f %0.2f) kmps\n",...
     days(min.btof),...
     days(min.utof), min.dv5/1000, min.dv6/1000, min.dv7/1000);
-    
+
 animate({min.e1, min.m2, min.m3, min.t1, min.t3, min.t5, min.t7},...
     [[min.e1.epoch, min.t8.epoch];...
     [min.m2.epoch, min.m3.epoch];...
@@ -195,12 +195,3 @@ animate({min.e1, min.m2, min.m3, min.t1, min.t3, min.t5, min.t7},...
     [min.e5.epoch, min.t6.epoch];...
     [min.t7.epoch, min.t8.epoch]],...
     {'', 'red', '', 'blue', 'green', 'magenta', 'cyan'});
-
-
-%% compute required DV to achieve vinf from a given orbit
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
-
-end

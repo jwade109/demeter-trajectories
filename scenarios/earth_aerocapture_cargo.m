@@ -2,7 +2,7 @@ clear;
 clc;
 close all;
 
-luna = luna();
+luna = luna_body();
 
 parking = earth_parking(300);
 R = parking.primary_body.radius;

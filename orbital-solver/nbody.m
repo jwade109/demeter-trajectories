@@ -1,6 +1,6 @@
 function body = nbody(name, mass, radius, position, velocity)
 
-body = struct;
+body = astronomical_body();
 body.name = name;
 body.mass = mass;
 body.radius = radius;

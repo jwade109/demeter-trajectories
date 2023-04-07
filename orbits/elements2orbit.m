@@ -22,6 +22,8 @@ v = v*(sin(phi)*t + cos(phi)*s);
 
 orbit = rv2orbit(r, v, primary, now());
 
+end
+
 % check(a, orbit.a);
 % check(e, orbit.e);
 % check(i, orbit.i);
@@ -29,13 +31,9 @@ orbit = rv2orbit(r, v, primary, now());
 % check(argp, orbit.argp);
 % check(nu, orbit.nu);
 
-end
-
-function check(true, test)
-
-if norm(true - test) > 1E-3
-    warning("bad!");
-    warning("bad!");
-end
-
-end
+% function check(true, test)
+% 
+% if norm(true - test) > 1E-3
+%     warning("bad!");
+%     warning("bad!");
+% end

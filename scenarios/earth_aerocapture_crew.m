@@ -2,9 +2,9 @@ clear;
 clc;
 close all;
 
-solution = earth_to_mars();
+solution = earth_to_mars_body();
 mars_earth_braking_dv = solution.dv4;
-luna = luna();
+luna = luna_body();
 max_aerocapture_dv = 4000;
 aerocap_highest_apoapsis = luna.orbit.a/2;
 acc = 50/(50*1000);

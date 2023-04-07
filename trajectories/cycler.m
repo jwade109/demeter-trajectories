@@ -6,10 +6,10 @@ close all;
 
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
 epoch = datetime('01-jan-2020');
-earth = earth();
+earth = earth_body();
 earth_parking = elements2orbit((6378+500)*1000,...
     0, 0, 0, 0, 0, earth);
-mars = mars();
+mars = mars_body();
 mars_parking = elements2orbit(9000*1000,...
     0, 0, 0, 0, 0, mars);
 
@@ -26,19 +26,19 @@ dtof_vec = days(105:5:200);
 Z = zeros(numel(launch_date_vec), numel(dtof_vec))*NaN;
 
 for i = 1:numel(launch_date_vec)
-    
+
 launch_date = launch_date_vec(i);
 
 e1 = propagate_to(earth.orbit, launch_date);
 
 for j = 1:numel(dtof_vec)
-    
+
 dtof = dtof_vec(j);
-    
+
 m2 = propagate_to(mars.orbit, launch_date + dtof);
 
 for rtof = earth.orbit.T*1.5 - dtof
-    
+
 e3 = e1;
 e3.epoch = e1.epoch + years(3);
 e1.stop = e3.epoch;
@@ -50,17 +50,17 @@ if sum(isnan(v1)) || sum(isnan(v2)) || sum(isnan(v3)) || sum(isnan(v4))
     warning("NaN detected!");
     continue;
 end
-    
+
 if norm(v1 - e1.v) < norm(v2 - e1.v)
-    t1 = rv2orbit(e1.r, v1, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v1, sol_body(), e1.epoch);
 else
-    t1 = rv2orbit(e1.r, v2, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v2, sol_body(), e1.epoch);
 end
 
 if norm(v3 - m2.v) < norm(v4 - m2.v)
-    t3 = rv2orbit(m2.r, v3, sun(), m2.epoch);
+    t3 = rv2orbit(m2.r, v3, sol_body(), m2.epoch);
 else
-    t3 = rv2orbit(m2.r, v4, sun(), m2.epoch);
+    t3 = rv2orbit(m2.r, v4, sol_body(), m2.epoch);
 end
 
 if strcmp(t1.type, 'hyperbolic') || strcmp(t3.type, 'hyperbolic')
@@ -84,14 +84,14 @@ minimize = dv;
 Z(i, j) = dv;
 
 total_time = days(seconds(dtof)) + days(seconds(rtof));
- 
+
 fprintf("%s: D: %0.1f, R: %0.1f = " +...
     "%0.1f km/s, %0.1f days\n",...
     datestr(launch_date),...
     days(dtof),...
     days(rtof),...
     dv/1000, days(total_time));
-    
+
 if minimize < global_min
     global_min = minimize;
     min = struct;
@@ -156,17 +156,8 @@ min.m2.stop = min.m2.epoch;
 min.e3.stop = min.e3.epoch;
 min.t1.stop = min.e3.epoch;
 
-eci2({min.t1, min.e1, min.m1, min.m2, min.e3}, ...
+eci({min.t1, min.e1, min.m1, min.m2, min.e3}, ...
      {'w-', 'b--', 'r--', '', ''}, ...
      {'b.', 'b.', 'r.', 'r.', 'b.'});
 
 % animate(1, min.t1, min.e1, min.m1);
-
-
-%% compute required DV to achieve vinf from a given orbit
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
-
-end

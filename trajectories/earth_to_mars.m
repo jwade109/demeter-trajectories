@@ -34,7 +34,7 @@ end
 
 %% orbit definitions
 
-sun = sun_body();
+sun = sol_body();
 
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
 e = earth_body();
@@ -53,19 +53,19 @@ earth_reentry_limit = 4000; % m/s
 mars_reentry_limit = 3000; % m/s
 
 for launch_date = launch_dates
-    
+
 e1 = propagate_to(e, launch_date);
 
 for dtof = departure_tofs
-    
+
 m2 = propagate_to(m, launch_date + dtof);
 
 for stay_time = stay_times
-    
+
 m3 = propagate_to(m, launch_date + dtof + stay_time);
-    
+
 for rtof = return_tofs
-    
+
 e4 = propagate_to(e, launch_date + dtof + stay_time + rtof);
 
 [v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, sun.mu);
@@ -87,11 +87,11 @@ t2 = propagate_to(t1, m2.epoch);
 t4 = propagate_to(t3, e4.epoch);
 m1 = propagate_to(m2, e1.epoch);
 
-e1.stop = e1.epoch + e1.T;
-m2.stop = m3.epoch;
+% e1.stop = e1.epoch + e1.T;
+% m2.stop = m3.epoch;
 
-t1.stop = t2.epoch;
-t3.stop = t4.epoch;
+% t1.stop = t2.epoch;
+% t3.stop = t4.epoch;
 
 dv1 = dvreq(norm(t1.v - e1.v), earth_parking);
 dv2 = dvreq(norm(t2.v - m2.v), mars_parking);
@@ -113,7 +113,7 @@ fprintf("%s: D: %0.1f, S: %0.1f, R: %0.1f = %0.3f km/s, %0.2f days\n",...
     days(stay_time),...
     days(rtof),...
     dv/1000, days(total_time));
-    
+
 if minimize < global_min
     global_min = minimize;
     min = struct;
@@ -155,23 +155,15 @@ fprintf(":: %s D %0.1f, S %0.1f, R %0.1f = (%0.2f, %0.2f, %0.2f, %0.2f) kmps, %0
     min.dv4/1000,...
     days(min.dtof) + days(min.rtof) + days(min.stay));
 
-min.e4.stop = min.e4.epoch;
+% min.e4.stop = min.e4.epoch;
 abort = min.t2;
-abort.stop = min.t1.epoch + years(1.5);
+% abort.stop = min.t1.epoch + years(1.5);
 
-eci2({venus, abort, min.e1, min.m1, min.t1, min.t3, min.m2, min.e4}, ...
-    {'m:', 'y.-', 'b--', 'r--', 'w',  'w',  'w', ''}, ...
-    {'', 'b.', 'b.',  'r.',  'b.', 'r.', 'r.', 'b.'});
+eci(venus, abort, min.e1, min.m1, min.t1, min.t3, min.m2, min.e4);
 
-min.e1.stop = min.e1.epoch + years(3);
+% min.e1.stop = min.e1.epoch + years(3);
 % animate(1, min.e1, min.m1, min.t1, min.t3, min.m2, min.e4, t1_abort);
 
 % save(cache, 'min');
-
-end
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
 
 end

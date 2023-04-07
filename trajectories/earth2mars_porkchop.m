@@ -20,25 +20,25 @@ epoch = datetime('01-jan-2020');
 
 launch_date_vec = ...
         datetime('01-Jan-2035'):5:datetime('31-Dec-2035');
-    
+
 dtof_vec = days(60:5:330);
 
 Z = ones(numel(launch_date_vec), numel(dtof_vec))*NaN;
 C = zeros(numel(launch_date_vec), numel(dtof_vec));
 
 for i = 1:numel(launch_date_vec)
-    
+
 launch_date = launch_date_vec(i);
 
 e1 = propagate_to(earth, launch_date);
 
 for j = 1:numel(dtof_vec)
-    
+
 dtof = dtof_vec(j);
 
 cycle_tof = years(2) - dtof;
 ecycle = propagate_to(earth, launch_date + years(2));
-    
+
 m2 = propagate_to(mars, launch_date + dtof);
 
 [v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
@@ -76,7 +76,7 @@ dv = dv1 + dv2;
 
 Z(i, j) = dv;
 C(i, j) = cycledv;
- 
+
 fprintf("%s: D: %0.1f = " +...
     "%0.1f km/s (T: %0.1f)\n",...
     datestr(launch_date),...
@@ -145,12 +145,3 @@ ylabel("Time of Flight (days)",...
     'FontSize', 16);
 title("Total \Delta{V}, One Way Transit from Earth to Mars (km/s)",...
     'FontSize', 20)
-
-
-%% compute required DV to achieve vinf from a given orbit
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
-
-end

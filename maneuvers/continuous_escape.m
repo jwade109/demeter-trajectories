@@ -9,8 +9,8 @@ end
 
 max_dur = days(500);
 
+trajectory = low_thrust_trajectory();
 trajectory.initial = initial;
-trajectory.type = 'low-thrust trajectory';
 trajectory.dt = dt;
 trajectory.acc = dv/seconds(dt);
 
@@ -19,7 +19,7 @@ trajectory.path = zeros(iters, 3);
 total_dv = 0;
 hold on;
 
-last = 1;
+% last = 1;
 for i = 1:iters
     if i == 1
         new_vel = add_along_velocity(initial, dv);
@@ -57,7 +57,7 @@ for i = 1:iters
 %         last = i;
 %     end
 
-    fprintf("%0.2f %0.2f m/s %0.1f days\n", i/iters*100,...
+    fprintf("%0.2f%% %0.2f m/s %0.1f days\n", i/iters*100,...
         total_dv, days(dt*i));
     title(sprintf("%s", datestr(initial.epoch + dt*i)));
 end

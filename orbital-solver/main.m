@@ -1,6 +1,6 @@
 clear;
 
-earth = earth();
+earth = earth_body();
 moon = moon();
 
 craft = spacecraft('MS3 ITV', [-7000000, 0, 0], [0, -10300, 0]);

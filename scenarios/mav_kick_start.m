@@ -2,8 +2,8 @@ clear;
 clc;
 close all;
 
-luna = luna();
-parking = earth_parking();
+luna = luna_body();
+parking = parking_orbit(earth_body(), km(400));
 impulsive = prograde(parking, 3600);
 
 dt = minutes(10);

@@ -5,13 +5,11 @@ close all;
 %% orbit definitions
 
 % Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
-epoch = datetime('01-jan-2020');
-earth = earth(epoch);
-earth_parking = elements2orbit((6378+500)*1000,...
-    0, 0, 0, 0, 0, mu('earth'));
-mars = mars(epoch);
-mars_parking = elements2orbit(9000*500,...
-    0, 0, 0, 0, 0, mu('mars'));
+earth = earth_body();
+earth_parking = parking_orbit(earth, km(500));
+mars = mars_body();
+mars_parking = parking_orbit(mars, km(500));
+sol = sol_body();
 
 %% comb the desert
 
@@ -24,39 +22,39 @@ epoch = datetime('01-jan-2020');
 Z = zeros(numel(abort_out_vec), numel(rtof_vec))*NaN;
 
 for launch_date = datetime('07-July-2035')
-    
-e1 = propagate_to(earth, launch_date);
+
+e1 = propagate_to(earth.orbit, launch_date);
 
 for dtof = days(106)
-    
-m2 = propagate_to(mars, launch_date + dtof);
+
+m2 = propagate_to(mars.orbit, launch_date + dtof);
 
 for i = 1:numel(abort_out_vec)
-    
+
 abort_out = abort_out_vec(i);
 
 for j = 1:numel(rtof_vec)
-    
-rtof = rtof_vec(j);
-    
-e3 = propagate_to(earth, launch_date + abort_out + rtof);
 
-[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
+rtof = rtof_vec(j);
+
+e3 = propagate_to(earth.orbit, launch_date + abort_out + rtof);
+
+[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, sol.mu);
 
 if norm(v1 - e1.v) < norm(v2 - e1.v)
-    t1 = rv2orbit(e1.r, v1, mu('sun'), e1.epoch);
+    t1 = rv2orbit(e1.r, v1, sol, e1.epoch);
 else
-    t1 = rv2orbit(e1.r, v2, mu('sun'), e1.epoch);
+    t1 = rv2orbit(e1.r, v2, sol, e1.epoch);
 end
 
 t2 = propagate_to(t1, launch_date + abort_out);
 
-[v3, ~, v4, ~] = intercept2(t2.r, e3.r, rtof, mu('sun'));
+[v3, ~, v4, ~] = intercept2(t2.r, e3.r, rtof, sol.mu);
 
 if norm(v3 - t2.v) < norm(v4 - t2.v)
-    t3 = rv2orbit(t2.r, v3, mu('sun'), t2.epoch);
+    t3 = rv2orbit(t2.r, v3, sol, t2.epoch);
 else
-    t3 = rv2orbit(t2.r, v4, mu('sun'), t2.epoch);
+    t3 = rv2orbit(t2.r, v4, sol, t2.epoch);
 end
 
 if sum(isnan(v1)) || sum(isnan(v2)) || sum(isnan(v3)) || sum(isnan(v4))
@@ -64,14 +62,14 @@ if sum(isnan(v1)) || sum(isnan(v2)) || sum(isnan(v3)) || sum(isnan(v4))
     continue;
 end
 
-if strcmp(t1.type, 'hyperbolic') || strcmp(t3.type, 'hyperbolic')
+if strcmp(t1.class, 'hyperbolic') || strcmp(t3.class, 'hyperbolic')
     continue
 end
 
 t4 = propagate_to(t3, e3.epoch);
 
-t1.stop = t2.epoch;
-t3.stop = t4.epoch;
+% t1.stop = t2.epoch;
+% t3.stop = t4.epoch;
 
 dv = norm(t2.v - t3.v) + ...
      max(dvreq(norm(t4.v - e3.v), earth_parking) - reentry_limit, 0);
@@ -86,7 +84,7 @@ fprintf("%s D %0.1f, A %0.1f, R %0.1f = " +...
     days(abort_out),...
     days(rtof),...
     dv/1000);
-    
+
 if minimize < global_min
     global_min = minimize;
     min = struct;
@@ -150,12 +148,3 @@ fprintf(">> %s D %0.1f, A %0.1f, R %0.1f = %0.1f kmps, %0.1f days\n",...
 %     [min.t1.epoch, min.t2.epoch];...
 %     [min.t3.epoch, min.t4.epoch]],...
 %     {'', '', 'red', 'blue'});
-
-
-%% compute required DV to achieve vinf from a given orbit
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
-
-end

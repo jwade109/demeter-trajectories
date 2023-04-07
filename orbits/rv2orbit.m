@@ -1,10 +1,9 @@
 function orbit = rv2orbit(r, v, primary_body, time)
 
-orbit = struct;
+orbit = keplerian_orbit();
 orbit.r = real(r);
 orbit.v = real(v);
 clear r v;
-orbit.type = 'orbit';
 orbit.mu = primary_body.mu;
 orbit.epoch = time;
 orbit.primary_body = primary_body;
@@ -123,7 +122,7 @@ end
 orbit.M = orbit.E - orbit.e*sin(orbit.E);
 orbit.T = seconds(sqrt(4*pi^2*orbit.a^3/orbit.mu));
 orbit.x = orbit.e*sqrt(orbit.a);
-    
+
 end
 
 function orbit = elliptical(orbit)

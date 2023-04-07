@@ -4,16 +4,11 @@ close all;
 
 %% orbit definitions
 
-% Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
-epoch = datetime('01-jan-2020');
-e = earth();
-e = e.orbit;
-earth_parking = elements2orbit((6378+500)*1000,...
-    0, 0, 0, 0, 0, earth());
-m = mars();
-m = m.orbit;
-mars_parking = elements2orbit(9000*1000,...
-    0, 0, 0, 0, 0, mars());
+earth = earth_body();
+earth_parking = parking_orbit(earth, km(500));
+mars = mars_body();
+mars_parking = parking_orbit(mars, km(500));
+sol = sol_body();
 
 %% comb the desert
 
@@ -22,46 +17,46 @@ epoch = datetime('01-jan-2020');
 reentry_limit = 4000; % m/s
 
 for launch_date = datetime('01-Jan-2035'):days(10):datetime('31-Aug-2035')
-    
-e1 = propagate_to(e, launch_date);
+
+e1 = propagate_to(earth.orbit, launch_date);
 
 for dtof = days(140:10:260)
-    
-m2 = propagate_to(m, launch_date + dtof);
+
+m2 = propagate_to(mars.orbit, launch_date + dtof);
 
 for stay_time = days(60)
-    
-m3 = propagate_to(m, launch_date + dtof + stay_time);
-    
-for rtof = days(200:10:280)
-    
-e4 = propagate_to(e, launch_date + dtof + stay_time + rtof);
 
-[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
-[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, mu('sun'));
+m3 = propagate_to(mars.orbit, launch_date + dtof + stay_time);
+
+for rtof = days(200:10:280)
+
+e4 = propagate_to(earth.orbit, launch_date + dtof + stay_time + rtof);
+
+[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, sol.mu);
+[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, sol.mu);
 
 if sum(isnan(v1)) || sum(isnan(v2)) || sum(isnan(v3)) || sum(isnan(v4))
     error("NaN detected!");
 end
-    
+
 if norm(v1 - e1.v) < norm(v2 - e1.v)
-    t1 = rv2orbit(e1.r, v1, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v1, sol, e1.epoch);
 else
-    t1 = rv2orbit(e1.r, v2, sun(), e1.epoch);
+    t1 = rv2orbit(e1.r, v2, sol, e1.epoch);
 end
 
 if norm(v3 - m3.v) < norm(v4 - m3.v)
-    t3 = rv2orbit(m3.r, v3, sun(), m3.epoch);
+    t3 = rv2orbit(m3.r, v3, sol, m3.epoch);
 else
-    t3 = rv2orbit(m3.r, v4, sun(), m3.epoch);
+    t3 = rv2orbit(m3.r, v4, sol, m3.epoch);
 end
 
 t2 = propagate_to(t1, m2.epoch);
 t4 = propagate_to(t3, e4.epoch);
 
-t1.stop = t2.epoch;
-t2.stop = t3.epoch;
-t3.stop = t4.epoch;
+% t1.stop = t2.epoch;
+% t2.stop = t3.epoch;
+% t3.stop = t4.epoch;
 
 dv1 = dvreq(norm(t1.v - e1.v), earth_parking);
 dv2 = dvreq(norm(t2.v - m2.v), mars_parking);
@@ -73,7 +68,7 @@ minimize = dv1 + max(dv2 - reentry_limit, 0) + ...
            dv3 + max(dv4 - reentry_limit, 0);
 
 total_time = dtof + rtof + stay_time;
- 
+
 fprintf("%s: D: %0.1f, S: %0.1f, R: %0.1f = " +...
     "%0.3f km/s, %0.2f days\n",...
     datestr(launch_date),...
@@ -81,7 +76,7 @@ fprintf("%s: D: %0.1f, S: %0.1f, R: %0.1f = " +...
     days(stay_time),...
     days(rtof),...
     dv/1000, days(total_time));
-    
+
 if minimize < global_min
     global_min = minimize;
     min = struct;
@@ -123,12 +118,4 @@ fprintf(":: %s D %0.1f, S %0.1f, R %0.1f = (%0.2f, %0.2f, %0.2f, %0.2f) kmps, %0
     min.dv4/1000,...
     days(min.dtof) + days(min.rtof) + days(min.stay));
 
-eci(min.e1, min.m2, min.m3, min.t1, min.t3);
-
-%% compute required DV to achieve vinf from a given orbit
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
-
-end
+eci(sol, min.e1, min.m2, min.m3, min.t1, min.t3);

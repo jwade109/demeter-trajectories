@@ -1,8 +1,7 @@
-function body = deimos()
+function body = deimos_body()
 
-body = struct;
-body.type = 'body';
-body.name = 'deimos';
+body = astronomical_body();
+body.name = 'Deimos';
 body.mu = 104100;
 body.radius = 6200;
 

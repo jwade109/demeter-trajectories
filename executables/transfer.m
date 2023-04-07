@@ -2,9 +2,9 @@ clear;
 clc;
 close all;
 
-initial = elements2orbit(7E+06, 0.2, 0, -0.4, 2, 1, mars());
+initial = elements2orbit(7E+06, 0.2, 0, -0.4, 2, 1, mars_body());
 initial.epoch = datetime('01-Jan-2020');
-target = elements2orbit(17E+06, 0.3, 0.8, -0.4, 0.3, 2, mars());
+target = elements2orbit(17E+06, 0.3, 0.8, -0.4, 0.3, 2, mars_body());
 target.epoch = datetime('01-Jan-2020');
 
 maneuvers = transfer_do(initial, target);

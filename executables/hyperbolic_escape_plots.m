@@ -1,5 +1,5 @@
 
-e = earth()
+e = earth_body()
 r = 6378*1000 + 400*1000;
 vcirc = sqrt(e.mu/r);
 orbit = rv2orbit([r, 0, 0], [0, vcirc, 0], e, 0);

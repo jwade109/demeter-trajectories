@@ -2,8 +2,8 @@ clear;
 clc;
 close all;
 
-luna = luna();
-parking = earth_parking();
+luna = luna_body();
+parking = parking_orbit(earth_body(), km(400));
 impulsive = prograde(parking, 3700);
 
 dt = minutes(15);
@@ -19,9 +19,4 @@ orion = propagate_to_nu(parking, 3*pi/2*0.95);
 [orion, dv] = change_apoapsis(orion, spiral.final.a*1.001);
 orion = propagate_to_nu(orion, pi);
 
-copy = spiral.final;
-copy.stop = copy.epoch + days(14);
-
-eci2({spiral, spiral.final, crew, copy, orion},...
-    {'y-', 'w--', 'y-', 'y-', 'w-'}, ...
-    {'r.', 'r.', 'r.', 'r.', 'r.'});
+eci({spiral, spiral.final, crew, orion});

@@ -1,8 +1,7 @@
-function body = phobos()
+function body = phobos_body()
 
-body = struct;
-body.type = 'body';
-body.name = 'phobos';
+body = astronomical_body();
+body.name = 'Phobos';
 body.mu = 716100;
 body.radius = 11100;
 

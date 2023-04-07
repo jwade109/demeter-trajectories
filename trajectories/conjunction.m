@@ -24,15 +24,15 @@ for launch_date = datetime('27-Apr-2033')
 e1 = propagate_to(earth, launch_date);
 
 for dtof = days(250:10:320)
-    
+
 m2 = propagate_to(mars, launch_date + dtof);
 
 for stay = days(450:25:550)
-    
+
 m3 = propagate_to(mars, launch_date + dtof + stay);
 
 for rtof = days(250:10:320)
-    
+
 e4 = propagate_to(earth, launch_date + dtof + stay + rtof);
 
 [v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
@@ -79,7 +79,7 @@ fprintf("%s D %0.1f, S %0.1f, R %0.1f = " +...
     days(stay),...
     days(rtof),...
     dv/1000);
-    
+
 if minimize < global_min
     global_min = minimize;
     optimal = struct;
@@ -123,12 +123,3 @@ animate({optimal.e1, optimal.m2, optimal.t1, optimal.m2, optimal.t3},...
     [optimal.m2.epoch, optimal.m3.epoch];...
     [optimal.t3.epoch, optimal.t4.epoch]],...
     {'', '', 'blue', 'red', 'green'});
-
-
-%% compute required DV to achieve vinf from a given orbit
-
-function dv = dvreq(vinf, orbit)
-
-dv = sqrt(vinf.^2 + orbit.vesc.^2) - norm(orbit.v);
-
-end
