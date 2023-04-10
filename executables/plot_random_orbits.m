@@ -2,12 +2,18 @@ clear;
 clc;
 close all;
 
-body = earth_body();
+earth = earth_body();
 
-N = 30;
-orbits(1:N) = keplerian_orbit();
+N = 20;
+
+orbits = cell(N, 1);
+
 for i = 1:N
-    orbits(i) = random_viable_orbit(body);
+    orbits{i} = random_viable_orbit(earth);
 end
+
+orbits{1} = earth;
+orbits{2} = luna_body();
+% orbits{3} = sol_body();
 
 eci(orbits);

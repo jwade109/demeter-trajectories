@@ -1,11 +1,14 @@
-function [orbit, dv] = circularize(orbit)
+function [new_orbit, dv] = circularize(orbit)
 
-old_vel = orbit.v;
-a = norm(orbit.r);
-vel = sqrt(orbit.mu*(2/a - 1/a));
+o2 = propagate_to_nu(orbit, pi, 1);
 
-orbit = rv2orbit(orbit.r, orbit.in_track*vel, ...
-    orbit.primary_body, orbit.epoch);
-dv = norm(orbit.v - old_vel);
+old_vel = o2.v;
+a = norm(o2.r);
+vel = sqrt(o2.mu*(2/a - 1/a));
+
+new_orbit = rv2orbit(o2.r, o2.in_track*vel, ...
+    o2.primary_body, o2.epoch);
+dv = norm(new_orbit.v - old_vel);
+new_orbit.label = "circularized";
 
 end

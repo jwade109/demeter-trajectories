@@ -41,7 +41,7 @@ else
     t1 = rv2orbit(e1.r, v2, sol, e1.epoch);
 end
 
-if sum(isnan(t1.v)) || strcmp(t1.type, 'hyperbolic')
+if sum(isnan(t1.v)) || strcmp(t1.class, 'hyperbolic')
     continue;
 end
 

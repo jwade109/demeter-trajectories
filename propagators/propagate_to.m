@@ -53,13 +53,6 @@ end
 old_nu = orbit.nu;
 dt = seconds(time - orbit.epoch);
 
-if ~isa(dt, 'double')
-    disp(dt)
-    disp(time)
-    disp(orbit.epoch)
-    error("Should be a double!")
-end
-
 M2 = orbit.mm*dt + orbit.M;
 f = @ (E) M2 - E + orbit.e*sin(E);
 E2 = fzero(f, M2);
@@ -67,6 +60,8 @@ nu2 = 2*atan(sqrt((1+orbit.e)/(1-orbit.e))*tan(E2/2));
 if nu2 < 0
     nu2 = nu2 + 2*pi;
 end
+
+fprintf("old: %0.3f, new %0.3f\n", old_nu, nu2);
 
 if dt == 0 && abs(old_nu - nu2) > 1E-9
     error("bad news bears");

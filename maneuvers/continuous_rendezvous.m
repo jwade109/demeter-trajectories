@@ -1,14 +1,29 @@
-function trajectory = continuous_rendezvous(initial, target, dur, dt, dv)
+clear;
+clc;
+close all;
 
-[success, file, cache] = request_cache('continuous_rendezvous', ...
-    initial, target, dur, dt, dv);
-if success
-    trajectory = file.trajectory;
-    return;
-end
+earth = earth_body();
+luna = luna_body();
 
+parking = parking_orbit(earth, km(500));
+target = luna.orbit;
+
+traj = continuous_rendezvous_do(parking, target, days(40), minutes(10), 5);
+
+eci({traj});
+
+
+function trajectory = continuous_rendezvous_do(initial, target, dur, dt, dv)
+
+% [success, file, cache] = request_cache('continuous_rendezvous', ...
+%     initial, target, dur, dt, dv);
+% if success
+%     trajectory = file.trajectory;
+%     return;
+% end
+
+trajectory = low_thrust_trajectory();
 trajectory.initial = initial;
-trajectory.type = 'low-thrust trajectory';
 trajectory.dt = dt;
 trajectory.acc = dv/seconds(dt);
 
@@ -38,16 +53,16 @@ for i = 1:iters
         prev = next;
         final = next;
         trajectory.path(i,:) = next.r;
-        if norm(old_vel - new_vel) == 0
-            fprintf("Stopped -- circularized!\n");
-            break;
-        end
+%         if norm(old_vel - new_vel) == 0
+% %             fprintf("Stopped -- circularized!\n");
+%             break;
+%         end
         if norm(next.r) > initial.primary_body.soi
             fprintf("Stopped -- exceeded roche limit\n");
             break;
         end
     end
-    
+
     if mod(i, 500) == 0
         hold on;
         plot3(trajectory.path(last:i,1), trajectory.path(last:i,2), trajectory.path(last:i,3));
@@ -55,7 +70,7 @@ for i = 1:iters
         last = i;
     end
 
-    fprintf("%0.2f %0.2f m/s %0.1f days\n", i/iters*100,...
+    fprintf("%d %0.2f %0.2f m/s %0.1f days\n", i, i/iters*100,...
         total_dv, days(dt*i));
     title(sprintf("%s", datestr(initial.epoch + dt*i)));
 end
@@ -65,21 +80,29 @@ trajectory.tof = days(days(dt*i));
 trajectory.final = final;
 trajectory.dv = total_dv;
 
-save(cache, 'trajectory');
+% save(cache, 'trajectory');
 
 end
 
 function v = rendezvous(initial, dv, target)
 
-if norm(initial.a) < target.a*0.95
+if initial.ra < target.a
     v = add_along_velocity(initial, dv);
-elseif initial.ra < target.a
-    v = add_along_horizon(initial, dv);
-elseif initial.e > 0.01
+elseif abs(initial.nu - pi) < 0.1
     v = circularize(initial, dv);
 else
     v = initial.v;
 end
+
+% if norm(initial.a) < target.a*0.95
+%     v = add_along_velocity(initial, dv);
+% % elseif initial.ra < target.a
+% %     v = add_along_horizon(initial, dv);
+% elseif initial.e > 0.01
+%     v = circularize(initial, dv);
+% else
+%     v = initial.v;
+% end
 
 end
 

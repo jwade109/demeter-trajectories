@@ -32,9 +32,11 @@ classdef keplerian_orbit
         E
         M
         T
+        D
         x
         F
         vinf
         l
+        label
     end
 end
