@@ -99,8 +99,8 @@ if norm(orbit.e) < 1
 end
 
 if norm(orbit.e) < 1
-    periapsis = ROT*[orbit.rp; 0; 0];
-    apoapsis = -ROT*[orbit.ra; 0; 0];
+    periapsis = ROT*[orbit.rp; 0; 0] + xyzoff;
+    apoapsis = -ROT*[orbit.ra; 0; 0] + xyzoff;
     plot3(periapsis(1), periapsis(2), periapsis(3), 'blue.', 'MarkerSize', 10);
     plot3(apoapsis(1), apoapsis(2), apoapsis(3), 'blue*', 'MarkerSize', 10);
 end

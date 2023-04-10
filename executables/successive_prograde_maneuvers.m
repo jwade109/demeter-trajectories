@@ -6,13 +6,13 @@ earth = earth_body();
 
 eci({earth, luna_body()});
 
-dv = 3;
+dv = 1;
 N = 100000;
 dt = minutes(10);
 orbits(1:N) = keplerian_orbit();
 for i = 1:N
     if i == 1
-        orbits(i) = random_viable_orbit(earth);
+        orbits(i) = random_orbit_around(earth);
         eci({orbits(i)});
     else
         prev = orbits(i-1);

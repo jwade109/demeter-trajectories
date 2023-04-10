@@ -61,8 +61,6 @@ if nu2 < 0
     nu2 = nu2 + 2*pi;
 end
 
-fprintf("old: %0.3f, new %0.3f\n", old_nu, nu2);
-
 if dt == 0 && abs(old_nu - nu2) > 1E-9
     error("bad news bears");
 end

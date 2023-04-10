@@ -22,8 +22,6 @@ v = v*(sin(phi)*t + cos(phi)*s);
 
 orbit = rv2orbit(r, v, primary, now());
 
-fprintf("argp provided: %0.3f computed: %0.3f\n", argp, orbit.argp);
-
 end
 
 % check(a, orbit.a);
@@ -34,7 +32,7 @@ end
 % check(nu, orbit.nu);
 
 % function check(true, test)
-% 
+%
 % if norm(true - test) > 1E-3
 %     warning("bad!");
 %     warning("bad!");
