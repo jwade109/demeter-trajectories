@@ -43,8 +43,8 @@ e3 = e1;
 e3.epoch = e1.epoch + years(3);
 e1.stop = e3.epoch;
 
-[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
-[v3, ~, v4, ~] = intercept2(m2.r, e3.r, rtof, mu('sun'));
+[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, sol.mu);
+[v3, ~, v4, ~] = intercept2(m2.r, e3.r, rtof, sol.mu);
 
 if sum(isnan(v1)) || sum(isnan(v2)) || sum(isnan(v3)) || sum(isnan(v4))
     warning("NaN detected!");

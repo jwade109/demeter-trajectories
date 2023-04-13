@@ -1,5 +1,9 @@
 function orbit = rv2orbit(r, v, primary_body, time)
 
+if ~isa(primary_body, 'astronomical_body')
+    error("primary_body is of invalid type %s", class(primary_body));
+end
+
 orbit = keplerian_orbit();
 orbit.r = real(r);
 orbit.v = real(v);

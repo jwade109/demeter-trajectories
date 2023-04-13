@@ -4,14 +4,11 @@ close all;
 
 %% orbit definitions
 
-% Relative ICRF Heliocentric Classical Elements, Jan 1st, 2020
-epoch = datetime('01-jan-2020');
-earth = earth(epoch);
-earth_parking = elements2orbit((6378+500)*1000,...
-    0, 0, 0, 0, 0, mu('earth'));
-mars = mars(epoch);
-mars_parking = elements2orbit(9000*1000,...
-    0, 0, 0, 0, 0, mu('mars'));
+sol = sol_body();
+earth = earth_body();
+earth_parking = parking_orbit(earth, km(500));
+mars = mars_body();
+mars_parking = parking_orbit(mars, km(500));
 
 %% comb the desert
 
@@ -35,26 +32,26 @@ for rtof = days(250:10:320)
 
 e4 = propagate_to(earth, launch_date + dtof + stay + rtof);
 
-[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
-[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, mu('sun'));
+[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, sol.mu);
+[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, sol.mu);
 
 if sum(isnan(v1)) || sum(isnan(v2)) || sum(isnan(v3)) || sum(isnan(v4))
     warning("NaN detected!");
 end
 
 if norm(v1 - e1.v) < norm(v2 - e1.v)
-    t1 = rv2orbit(e1.r, v1, mu('sun'), e1.epoch);
+    t1 = rv2orbit(e1.r, v1, sol, e1.epoch);
 else
-    t1 = rv2orbit(e1.r, v2, mu('sun'), e1.epoch);
+    t1 = rv2orbit(e1.r, v2, sol, e1.epoch);
 end
 
 if norm(v3 - m3.v) < norm(v4 - m3.v)
-    t3 = rv2orbit(m3.r, v3, mu('sun'), m3.epoch);
+    t3 = rv2orbit(m3.r, v3, sol, m3.epoch);
 else
-    t3 = rv2orbit(m3.r, v4, mu('sun'), m3.epoch);
+    t3 = rv2orbit(m3.r, v4, sol, m3.epoch);
 end
 
-if strcmp(t1.type, 'hyperbolic') || strcmp(t3.type, 'hyperbolic')
+if strcmp(t1.class, 'hyperbolic') || strcmp(t3.class, 'hyperbolic')
     warning("Hyperbolic!");
     continue;
 end

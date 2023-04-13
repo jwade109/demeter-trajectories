@@ -41,7 +41,7 @@ else
     t1 = rv2orbit(m1.r, v2, sol, m1.epoch);
 end
 
-if sum(isnan(t1.v)) || strcmp(t1.type, 'hyperbolic')
+if sum(isnan(t1.v)) || strcmp(t1.class, 'hyperbolic')
     continue;
 end
 
@@ -93,7 +93,7 @@ shading interp;
 set(gca,'FontSize',18)
 xlabel("Departure Date",'FontSize',24,'FontWeight','bold','FontName','Calibri')
 ylabel("Time of Flight (days)",'FontSize',24,'FontWeight','bold','FontName','Calibri')
-title("\color{white}Total \Delta{V}, One Way Transit from Mars to Earth (km/s)",'FontSize',24,'FontWeight','bold','FontName','Calibri')
+title("Total \Delta{V}, One Way Transit from Mars to Earth (km/s)",'FontSize',24,'FontWeight','bold','FontName','Calibri')
 
 fprintf(">> %s: D: %0.1f = " +...
     "(%0.1f, %0.1f) km/s\n",...

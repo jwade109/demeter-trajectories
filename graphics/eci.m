@@ -118,7 +118,6 @@ end
 %% plot astronomical body, but not its orbit
 function plot_astronomical_body(body, reference_body)
 
-warning("Plotting surface of %s", body.name);
 offset = frame_translate(body, reference_body);
 draw_a_sphere(offset, body.radius);
 text(offset(1), offset(2), offset(3) + body.radius, body.name);

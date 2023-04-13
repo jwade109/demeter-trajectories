@@ -126,7 +126,6 @@ plot3(days(abort_out_vec), 731 - days(abort_out_vec),...
 view([0, 90]);
 colorbar;
 shading interp;
-presentation_format('paper');
 grid on;
 xlabel("\color{black}Time Since Earth Departure (days)");
 ylabel("\color{black}Time to Return to Earth (days)");

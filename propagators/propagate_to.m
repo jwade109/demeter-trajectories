@@ -4,6 +4,14 @@ function orbit = propagate_to(orbit, time)
 %     warning("Very circular orbit -- results unstable!");
 % end
 
+if isa(orbit, 'keplerian_orbit')
+    % do nothing
+elseif isa(orbit, 'astronomical_body')
+    orbit = orbit.orbit;
+else
+    error("Orbit parameter is of invalid type %s", class(orbit));
+end
+
 if norm(orbit.e) < 1
     orbit = propagate_to_elements(orbit, time);
 else

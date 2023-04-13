@@ -3,7 +3,8 @@ function animate(orbits, timespans, colors)
 % orbits = varargin;
 
 o = numel(orbits);
-timespans = [];
+
+frames_per_day = 1;
 
 % for i = 1:o
 %     orb = orbits{i};
@@ -54,16 +55,19 @@ for i = 1:o
     end
 end
 
+lines = {};
+scatters = {};
+
 for i = 1:o
     orb = orbits{i};
     if isfield(orb, 'type') && strcmp(orb.type, 'low-thrust trajectory')
         plot3(orb.path(:,1), orb.path(:,2), orb.path(:,3));
     else
-        eci(orb);
+        eci({orb});
     end
-    orbits{i}.an = animatedline('Color', 'red', 'LineWidth', 5,...
+    lines{i} = animatedline('Color', 'red', 'LineWidth', 5,...
         'MaximumNumPoints', 5);
-    orbits{i}.sc = scatter(NaN, NaN, 'filled');
+    scatters{i} = scatter(NaN, NaN, 'filled');
 end
 
 view([0, 90]);
@@ -77,8 +81,8 @@ for i = 1:n
     for j = 1:o
         try
             pt = pos_history(i,:,j);
-            addpoints(orbits{j}.an, pt(1), pt(2), pt(3));
-            set(orbits{j}.sc, 'xdata', pt(1),...
+            addpoints(lines{j}, pt(1), pt(2), pt(3));
+            set(scatters{j}, 'xdata', pt(1),...
                 'ydata', pt(2), 'zdata', pt(3));
         catch
             return;

@@ -38,5 +38,7 @@ classdef keplerian_orbit
         vinf
         l
         label
+        start
+        stop
     end
 end

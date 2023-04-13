@@ -2,6 +2,11 @@ clear;
 close all;
 clc;
 
+luna = luna_body();
+earth = earth_body();
+mars = mars_body();
+sol = sol_body();
+
 % isp, thrust, mass, cost, power
 busek = engine_type('busek', 2210, 0.449, 25, 35e6, 8); 
 busek_block = engine_block(busek, 125);
@@ -17,9 +22,9 @@ parking_radius = R_earth + km(1000);
 
 nodes = [];
 nodes = add_maneuver(nodes, [transfer_stage, cargo], transfer_stage, 'LEO-LOPG',...
-    spiral(parking_radius, radius('moon'), acc, 'earth'));
+    spiral(parking_radius, luna.radius, acc, earth));
 nodes = add_maneuver(nodes, [transfer_stage, cargo], transfer_stage, 'LOPG-TMI',...
-    spiral(radius('earth'), radius('mars'), acc, 'sun'));
+    spiral(earth.radius, mars.radius, acc, sol));
 
 [tables, time, imleo, prop] = compile(nodes);
 
@@ -42,9 +47,9 @@ parking_radius = R_earth + km(1000);
 
 nodes = [];
 nodes = add_maneuver(nodes, [transfer_stage, cargo], transfer_stage, 'LEO-LOPG',...
-    spiral(parking_radius, radius('moon'), acc, 'earth'));
+    spiral(parking_radius, luna.radius, acc, earth));
 nodes = add_maneuver(nodes, [transfer_stage, cargo], transfer_stage, 'LOPG-TMI',...
-    spiral(radius('earth'), radius('mars'), acc, 'sun'));
+    spiral(earth.radius, mars.radius, acc, sol));
 
 [tables, time, imleo, prop] = compile(nodes);
 

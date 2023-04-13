@@ -118,4 +118,4 @@ fprintf(":: %s D %0.1f, S %0.1f, R %0.1f = (%0.2f, %0.2f, %0.2f, %0.2f) kmps, %0
     min.dv4/1000,...
     days(min.dtof) + days(min.rtof) + days(min.stay));
 
-eci(sol, min.e1, min.m2, min.m3, min.t1, min.t3);
+eci({sol, earth, mars, min.e1, min.m2, min.m3, min.t1, min.t3});

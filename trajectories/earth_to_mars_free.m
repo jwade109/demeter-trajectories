@@ -42,6 +42,7 @@ m = mars_body();
 m = m.orbit;
 mars_parking = elements2orbit(3600*1000,...
     0, 0, 0, 0, 0, mars_body());
+sol = sol_body();
 
 %% comb the desert
 
@@ -65,8 +66,8 @@ for rtof = return_tofs
 
 e4 = propagate_to(e, launch_date + dtof + stay_time + rtof);
 
-[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, mu('sun'));
-[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, mu('sun'));
+[v1, ~, v2, ~] = intercept2(e1.r, m2.r, dtof, sol);
+[v3, ~, v4, ~] = intercept2(m3.r, e4.r, rtof, sol);
 
 if norm(v1 - e1.v) < norm(v2 - e1.v)
     t1 = rv2orbit(e1.r, v1, sol_body(), e1.epoch);
@@ -152,7 +153,7 @@ fprintf(":: %s D %0.1f, S %0.1f, R %0.1f = (%0.2f, %0.2f, %0.2f, %0.2f) kmps, %0
     min.dv4/1000,...
     days(min.dtof) + days(min.rtof) + days(min.stay));
 
-eci(min.e1, min.m1, min.t1, min.t2, min.t3, min.t4);
+eci({min.e1, min.m1, min.t1, min.t2, min.t3, min.t4});
 
 %% compute required DV to achieve vinf from a given orbit
 

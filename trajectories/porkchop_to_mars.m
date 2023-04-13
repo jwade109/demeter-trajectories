@@ -17,7 +17,7 @@ epoch = datetime('01-jan-2020');
 
 launch_date_vec = datetime('01-Jan-2029'):days(5):datetime('31-Dec-2035');
 
-dtof_vec = days(100:5:450);
+dtof_vec = days(100:2:450);
 
 Z = ones(numel(launch_date_vec), numel(dtof_vec))*NaN;
 
